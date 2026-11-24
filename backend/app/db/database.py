@@ -1,14 +1,32 @@
+
 from sqlalchemy import create_engine
-from sqlalchemy.engine import URL
 from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.engine import URL
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    DB_USERNAME: str
+    DB_PASSWORD: str
+    DB_HOST: str = "localhost"
+    DB_PORT: int = 5432
+    DB_NAME: str
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8"
+    )
+
+
+settings = Settings()
 
 DATABASE_URL = URL.create(
     drivername="postgresql+psycopg",
-    username="postgres",
-    password="Thangam@916",
-    host="localhost",
-    port=5432,
-    database="nit_cdi_order_audit"
+    username=settings.DB_USERNAME,
+    password=settings.DB_PASSWORD,
+    host=settings.DB_HOST,
+    port=settings.DB_PORT,
+    database=settings.DB_NAME
 )
 
 engine = create_engine(
